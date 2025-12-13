@@ -5,3 +5,6 @@ __pycache__
 .env
 .env.local
 .env.production
+
+# Sensitive data
+attendees.csv
