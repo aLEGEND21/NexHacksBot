@@ -7,6 +7,5 @@ services:
     env_file:
       - .env
     volumes:
-      # Mount attendees.csv (ensure this file exists on the host)
       - ./attendees.csv:/app/attendees.csv:ro
     restart: always
