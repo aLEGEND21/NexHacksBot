@@ -1,4 +1,4 @@
-name: Deploy to Production
+name: Deploy to Production Server
 
 on:
   push:
@@ -7,27 +7,23 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Production
     runs-on: ubuntu-latest
-    environment: Automated Deployment
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.PRODUCTION_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H ${{ secrets.PRODUCTION_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            set -e
+            cd ~/NexHacksBot
 
-      - name: Mark current deploy version
-        run: |
-          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} \
-            "cd ~/NexHacksBot && git rev-parse HEAD > .last-successful-deploy"
+            echo "🚀 Starting deployment..."
 
-      - name: Run deploy script on server
-        run: |
-          ssh ${{ secrets.PRODUCTION_USER }}@${{ secrets.PRODUCTION_HOST }} \
-            'cd ~/NexHacksBot && git pull origin master && bash scripts/deploy.sh'
+            # Run deployment script
+            bash scripts/deploy.sh
+            echo "✅ Deployment completed successfully"
