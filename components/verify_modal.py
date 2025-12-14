@@ -91,8 +91,11 @@ class VerificationModal(Modal):
         last_name = self.attendee_data[lname_key][idx]
         await interaction.user.edit(nick=f"{first_name} {last_name} | {fmt_school}")
 
-        # Add the verified role and remove the unverified role
-        await interaction.user.add_roles(discord.Object(id=Config.VERIFIED_ROLE_ID))
+        # Add the verified and hacker roles and remove the unverified role
+        await interaction.user.add_roles(
+            discord.Object(id=Config.VERIFIED_ROLE_ID),
+            discord.Object(id=Config.HACKER_ROLE_ID),
+        )
         await interaction.user.remove_roles(
             discord.Object(id=Config.UNVERIFIED_ROLE_ID)
         )

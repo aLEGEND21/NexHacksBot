@@ -58,7 +58,7 @@ async def send_verify_msg(
         description="Click the button below to get verified and gain access to the server!",
         color=discord.Color.blurple(),
     )
-    em.set_thumbnail(url=ctx.guild.icon.url)
+    em.set_thumbnail(url=ctx.guild.icon.url if ctx.guild.icon else None)
 
     # Send message with view
     await channel.send(embed=em, view=VerifyMessageView(attendee_data, valid_schools))
