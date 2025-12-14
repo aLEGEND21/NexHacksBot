@@ -31,6 +31,8 @@ class VerificationModal(Modal):
         )
 
     async def callback(self, interaction: discord.Interaction):
+        await interaction.response.defer()
+
         valid_phone_numbers = self.attendee_data[phone_number_key]
         phone_number = self.children[0].value
 
@@ -42,7 +44,7 @@ class VerificationModal(Modal):
             digits_only = "1" + digits_only
 
         if digits_only not in valid_phone_numbers:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f":x: {interaction.user.mention}, the phone number `{phone_number}` is not recognized. Please try again.",
                 ephemeral=True,
             )
@@ -94,7 +96,7 @@ class VerificationModal(Modal):
         await interaction.user.remove_roles(
             discord.Object(id=Config.UNVERIFIED_ROLE_ID)
         )
-        await interaction.response.send_message(
+        await interaction.followup.send(
             f":white_check_mark: {interaction.user.mention}, you have been verified and given access to the server!",
             ephemeral=True,
         )
