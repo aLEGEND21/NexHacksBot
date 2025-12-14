@@ -39,8 +39,8 @@ class VerificationModal(Modal):
         # Extract only digits from the input
         digits_only = re.sub(r"\D", "", phone_number)
 
-        # If 10 digits, assume country code 1
-        if len(digits_only) == 10:
+        # If 10 digits and not in the valid phone numbers, assume country code 1
+        if len(digits_only) == 10 and digits_only not in valid_phone_numbers:
             digits_only = "1" + digits_only
 
         if digits_only not in valid_phone_numbers:
