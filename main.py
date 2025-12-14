@@ -69,4 +69,3 @@ async def send_verify_msg(
 
 
 bot.run(Config.BOT_TOKEN)
-bot.run(Config.BOT_TOKEN)

@@ -29,6 +29,9 @@ COPY --chown=botuser:botuser . .
 # Ensure local bin is in PATH
 ENV PATH=/home/botuser/.local/bin:$PATH
 
+# Set Python to unbuffered mode for immediate output
+ENV PYTHONUNBUFFERED=1
+
 # Switch to non-root user
 USER botuser
 
