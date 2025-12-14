@@ -1,3 +1,4 @@
 audioop-lts
+openai
 py-cord
 python-dotenv

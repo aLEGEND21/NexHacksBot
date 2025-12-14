@@ -1,4 +1,5 @@
 import csv
+import json
 
 import discord
 from discord import commands
@@ -8,21 +9,28 @@ from config import Config
 
 bot = discord.Bot()
 
-
-# Load valid phone numbers from the file
-valid_phone_numbers = set()
+# Load each column as a key in a dictionary
+attendee_data = {}
 with open(Config.ATTENDEES_CSV_PATH, "r") as f:
     reader = csv.DictReader(f)
     for row in reader:
-        phone = row["What is your phone number?"].strip()
-        if phone:
-            valid_phone_numbers.add(phone)
+        for key, value in row.items():
+            attendee_data.setdefault(key, [])
+            attendee_data[key].append(value)
+
+
+# Load all schools
+valid_schools = []
+with open("schools.json", "r") as f:
+    valid_schools = json.loads(f.read())
 
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user.name}#{bot.user.discriminator} (ID: {bot.user.id})")
-    bot.add_view(VerifyMessageView(valid_phone_numbers))  # Register persistent view
+    bot.add_view(
+        VerifyMessageView(attendee_data, valid_schools)
+    )  # Register persistent view
 
 
 @bot.command(name="ping", description="View the bot's latency")
@@ -53,11 +61,12 @@ async def send_verify_msg(
     em.set_thumbnail(url=ctx.guild.icon.url)
 
     # Send message with view
-    await channel.send(embed=em, view=VerifyMessageView(valid_phone_numbers))
+    await channel.send(embed=em, view=VerifyMessageView(attendee_data, valid_schools))
     await ctx.respond(
         f":white_check_mark: Verification message sent to {channel.mention}",
         ephemeral=True,
     )
 
 
+bot.run(Config.BOT_TOKEN)
 bot.run(Config.BOT_TOKEN)

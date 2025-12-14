@@ -7,9 +7,10 @@ from .verify_modal import VerificationModal
 
 
 class VerifyMessageView(View):
-    def __init__(self, valid_phone_numbers: set[str]):
+    def __init__(self, attendee_data: dict[str, list[str]], valid_schools: list[str]):
         super().__init__(timeout=None)  # Persistent view
-        self.valid_phone_numbers = valid_phone_numbers
+        self.attendee_data = attendee_data
+        self.valid_schools = valid_schools
 
     @button(
         label="Verify", style=discord.ButtonStyle.blurple, custom_id="verify_button"
@@ -24,5 +25,8 @@ class VerifyMessageView(View):
             return
 
         # Send the verification modal
-        modal = VerificationModal(valid_phone_numbers=self.valid_phone_numbers)
+        modal = VerificationModal(
+            attendee_data=self.attendee_data,
+            valid_schools=self.valid_schools,
+        )
         await interaction.response.send_modal(modal)

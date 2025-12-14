@@ -8,6 +8,7 @@ load_dotenv()
 class Config:
     # Environment Variables
     BOT_TOKEN = os.getenv("BOT_TOKEN")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
     # Misc Settings
     ATTENDEES_CSV_PATH = "attendees.csv"
