@@ -1,5 +1,6 @@
 import csv
 import json
+import os
 
 import discord
 from discord import commands
@@ -7,7 +8,10 @@ from discord import commands
 from components import VerifyMessageView
 from config import Config
 
-bot = discord.Bot()
+# Enable guild_members intent
+intents = discord.Intents.default()
+intents.members = True
+bot = discord.Bot(intents=intents)
 
 # Load each column as a key in a dictionary
 attendee_data = {}
@@ -66,6 +70,54 @@ async def send_verify_msg(
         f":white_check_mark: Verification message sent to {channel.mention}",
         ephemeral=True,
     )
+
+
+@bot.command(
+    name="get_names",
+    description="Export all guild member names to a text file (Owner only)",
+)
+async def get_names(ctx: discord.ApplicationContext):
+    await ctx.defer(ephemeral=True)
+
+    # Owner ID check
+    OWNER_ID = 416730155332009984
+    if ctx.author.id != OWNER_ID:
+        return await ctx.respond(
+            ":x: This command is restricted to the bot owner.", ephemeral=True
+        )
+
+    try:
+        # Chunk the guild to fetch all members (requires guild_members intent)
+        await ctx.guild.chunk()
+
+        # Parse names and extract first and last name
+        names_list = []
+        for member in ctx.guild.members:
+            display_name = member.display_name
+            # Split by "|" to separate name from school
+            if "|" in display_name:
+                name_part = display_name.split("|")[0].strip()
+                # Add to list if name part is not empty
+                if name_part:
+                    names_list.append(name_part)
+
+        # Write to file
+        with open("discord_members.txt", "w", encoding="utf-8") as f:
+            for name in names_list:
+                f.write(f"{name}\n")
+
+        await ctx.respond(
+            f":white_check_mark: Successfully exported {len(names_list)} member names to `discord_members.txt`",
+            file=discord.File("discord_members.txt"),
+            ephemeral=True,
+        )
+
+        os.remove("discord_members.txt")
+    except Exception as e:
+        await ctx.respond(
+            f":x: An error occurred while fetching members: {str(e)}",
+            ephemeral=True,
+        )
 
 
 bot.run(Config.BOT_TOKEN)
